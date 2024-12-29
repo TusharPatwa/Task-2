@@ -1,3 +1,4 @@
+Name:- TUSHAR PATWA Company:- CODTECH IT SOLUTIONS ID:-CT08ESY Duration:-20th December 2024 to 20th January 2025 Domain:- FRONTEND WEB DEVELOPMENET
 Overview of the Amazon Clone Code
 This code creates a basic Amazon Clone using HTML, CSS, and JavaScript. It allows users to browse products, add them to a cart, and see the total price.
 ________________________________________
