@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amazon Clone</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        header {
+            background-color: #232f3e;
+            color: white;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        header .cart {
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            padding: 20px;
+            justify-content: center;
+        }
+
+        .product {
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            width: 200px;
+            text-align: center;
+        }
+
+        .product img {
+            max-width: 100%;
+            height: 150px;
+            object-fit: contain;
+        }
+
+        .product h3 {
+            font-size: 18px;
+            margin: 10px 0;
+        }
+
+        .product p {
+            margin: 5px 0;
+        }
+
+        .product button {
+            padding: 10px;
+            background-color: #ffa41b;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            cursor: pointer;
+        }
+
+        .product button:hover {
+            background-color: #e59400;
+        }
+
+        .cart-modal {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 300px;
+            height: 100%;
+            background: white;
+            border-left: 2px solid #ddd;
+            box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
+            overflow-y: auto;
+            padding: 20px;
+            display: none;
+        }
+
+        .cart-modal h2 {
+            margin: 0 0 20px;
+        }
+
+        .cart-item {
+            margin-bottom: 15px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+        }
+
+        .cart-item h3 {
+            font-size: 16px;
+        }
+
+        .cart-item p {
+            margin: 5px 0;
+        }
+
+        .cart-total {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Amazon Clone</h1>
+        <div class="cart" onclick="toggleCart()">Cart (<span id="cart-count">0</span>)</div>
+    </header>
+
+    <div class="container" id="product-list">
+        <!-- Products will be dynamically added here -->
+    </div>
+
+    <div class="cart-modal" id="cart-modal">
+        <h2>Your Cart</h2>
+        <div id="cart-items">
+            <p>Your cart is empty.</p>
+        </div>
+        <div class="cart-total" id="cart-total"></div>
+    </div>
+
+    <script>
+        const products = [
+            { id: 1, name: "SUNGLASS", price: 899.00, image: "data:image/jpeg;base64,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" },
+            { id: 2, name: "JACKET", price: 1250.00, image: "https://m.media-amazon.com/images/I/61mvF3ceBBL._AC_UY1100_.jpg" },
+            { id: 3, name: "BASEBALL CAP", price: 650.00, image: "https://rukminim2.flixcart.com/image/850/1000/xif0q/cap/t/7/b/free-latest-ny-baseball-cap-highever-original-imagnm8yxxvmhmdy.jpeg?q=90&crop=false" },
+            { id: 4, name: "COTTON PANT", price: 1600.00, image: "https://cottonking.com/cdn/shop/files/38983-1.jpg?v=1706694650" }
+        ];
+
+        const cart = [];
+
+        function renderProducts() {
+            const productList = document.getElementById('product-list');
+            products.forEach(product => {
+                const productDiv = document.createElement('div');
+                productDiv.className = 'product';
+                productDiv.innerHTML = `
+                    <img src="${product.image}" alt="${product.name}">
+                    <h3>${product.name}</h3>
+                    <p>₹${product.price.toFixed(2)}</p>
+                    <button onclick="addToCart(${product.id})">Add to Cart</button>
+                `;
+                productList.appendChild(productDiv);
+            });
+        }
+
+        function addToCart(productId) {
+            const product = products.find(p => p.id === productId);
+            const cartItem = cart.find(item => item.id === productId);
+
+            if (cartItem) {
+                cartItem.quantity += 1;
+            } else {
+                cart.push({ ...product, quantity: 1 });
+            }
+
+            updateCart();
+        }
+
+        function updateCart() {
+            const cartCount = document.getElementById('cart-count');
+            const cartItems = document.getElementById('cart-items');
+            const cartTotal = document.getElementById('cart-total');
+
+            cartCount.textContent = cart.reduce((acc, item) => acc + item.quantity, 0);
+
+            if (cart.length === 0) {
+                cartItems.innerHTML = '<p>Your cart is empty.</p>';
+                cartTotal.textContent = '';
+                return;
+            }
+
+            cartItems.innerHTML = '';
+            cart.forEach(item => {
+                const cartItemDiv = document.createElement('div');
+                cartItemDiv.className = 'cart-item';
+                cartItemDiv.innerHTML = `
+                    <h3>${item.name}</h3>
+                    <p>Price: ₹${item.price.toFixed(2)}</p>
+                    <p>Quantity: ${item.quantity}</p>
+                `;
+                cartItems.appendChild(cartItemDiv);
+            });
+
+            const total = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
+            cartTotal.textContent = `Total: ₹${total.toFixed(2)}`;
+        }
+
+        function toggleCart() {
+            const cartModal = document.getElementById('cart-modal');
+            cartModal.style.display = cartModal.style.display === 'block' ? 'none' : 'block';
+        }
+
+        renderProducts();
+    </script>
+</body>
+</html>
